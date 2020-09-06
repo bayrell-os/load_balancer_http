@@ -9,14 +9,14 @@ TAG=`date '+%Y%m%d_%H%M%S'`
 
 case "$1" in
 	
-	router)
+	cloud_router)
 		docker build ./ -t bayrell/cloud_router:$TAG --file docker/router.dockerfile
 		docker tag bayrell/cloud_router:$TAG bayrell/cloud_router:latest
 		cd ..
 	;;
 	
 	*)
-		echo "Usage: $0 {web_panel|router}"
+		echo "Usage: $0 {cloud_router}"
 		RETVAL=1
 
 esac

@@ -3,11 +3,11 @@ version: "3.7"
 services:
 
     cloud_router:
-        image: bayrell/cloud_router:20200427_121919
+        image: bayrell/cloud_router:20200906_103413
         hostname: "{{.Service.Name}}.{{.Task.ID}}.local"
         volumes:
             - "router_data:/data"
-            - "../router/root/router.php:/root/router.php"
+            - "./router/root/router.php:/root/router.php"
         env_file:
             - common.env
         environment:
