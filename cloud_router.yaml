@@ -3,16 +3,16 @@ version: "3.7"
 services:
 
     cloud_router:
-        image: bayrell/cloud_router:20200906_103413
+        image: bayrell/cloud_router:20200928_150202
         hostname: "{{.Service.Name}}.{{.Task.ID}}.local"
         volumes:
-            - "router_data:/data"
+            - "cloud_router_data:/data"
             - "./router/root/router.php:/root/router.php"
         env_file:
             - common.env
         environment:
             DNS_RESOLVER: 127.0.0.11
-            SYSTEM_PANEL: cloud_web_panel
+            SYSTEM_PANEL: cloud_os_system_panel
             SYSTEM_DOMAIN: raspa.local
         ports:
             - 80:80
@@ -31,20 +31,16 @@ services:
                 constraints:
                     - node.role == manager
         networks:
-            - frontend
+            - balancer
         logging:
             driver: journald
             
 
 volumes:
-    router_data:
+    cloud_router_data:
 
 networks:
+    
+    balancer:
+        external: true
 
-    frontend:
-        driver: overlay
-        attachable: true
-        ipam:
-            driver: default
-            config:
-                - subnet: 172.22.0.0/16

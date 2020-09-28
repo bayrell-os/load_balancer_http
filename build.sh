@@ -10,7 +10,7 @@ TAG=`date '+%Y%m%d_%H%M%S'`
 case "$1" in
 	
 	cloud_router)
-		docker build ./ -t bayrell/cloud_router:$TAG --file docker/router.dockerfile
+		docker build ./ -t bayrell/cloud_router:$TAG --file docker/cloud_router.dockerfile
 		docker tag bayrell/cloud_router:$TAG bayrell/cloud_router:latest
 		cd ..
 	;;
