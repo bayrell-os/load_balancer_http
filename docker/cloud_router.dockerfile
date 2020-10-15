@@ -1,6 +1,6 @@
 FROM bayrell/alpine_php_fpm:7.3
 
-RUN apk update && apk add dnsmasq php7-curl && rm -rf /var/cache/apk/*
+RUN apk update && apk add dnsmasq php7-curl curl && rm -rf /var/cache/apk/*
 
 ADD router /src/files
 RUN cd ~; \
