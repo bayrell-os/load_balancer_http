@@ -1,0 +1,46 @@
+version: "3.7"
+
+services:
+    
+    router:
+        image: bayrell/cloud_router:20201016_131241
+        hostname: "{{.Service.Name}}.{{.Task.ID}}.local"
+        volumes:
+            - "router_data:/data"
+            - "/var/run/docker.sock:/var/run/docker.sock:ro"
+            - "./router/root/router.php:/root/router.php"
+        environment:
+            DNS_RESOLVER: 127.0.0.11
+            SYSTEM_PANEL: cloud_os_system_panel
+            SYSTEM_DOMAIN: cloud_os.local
+        deploy:
+            replicas: 1
+            endpoint_mode: dnsrr
+            update_config:
+                parallelism: 1
+                failure_action: rollback
+                delay: 5s
+            restart_policy:
+                condition: "on-failure"
+                delay: 10s
+                window: 120s
+            placement:
+                constraints:
+                    - node.hostname == docker0
+        networks:
+            - router
+        ports:
+          - target: 80
+            published: 80
+            protocol: tcp
+            mode: host
+        logging:
+            driver: journald
+
+volumes:
+    router_data:
+
+networks:
+    
+    router:
+        external: true

@@ -1,7 +1,9 @@
 #!/bin/bash
 
+sleep 1
+
 while true
 do
-    sleep 15
-    /root/router.php
+	/root/router.php
+	sleep 15
 done
