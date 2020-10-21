@@ -29,7 +29,7 @@ services:
                 constraints:
                     - node.hostname == docker0
         networks:
-            - router
+            - cloud_router
         ports:
           - target: 80
             published: 80
@@ -43,5 +43,5 @@ volumes:
 
 networks:
     
-    router:
+    cloud_router:
         external: true

@@ -199,7 +199,7 @@ function get_services_from_docker_socket()
 			if ($networks) foreach ($networks as $network)
 			{
 				$network_name = $network["Network"]["Spec"]["Name"];
-				if ($network_name != "router") continue;
+				if ($network_name != "cloud_router") continue;
 				
 				$addresses = $network["Addresses"];
 				foreach ($addresses as $address)
