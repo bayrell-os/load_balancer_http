@@ -3,7 +3,7 @@ version: "3.7"
 services:
     
     router:
-        image: bayrell/cloud_router:20201020_115901
+        image: bayrell/cloud_router:20201021_110337
         hostname: "{{.Service.Name}}.{{.Task.ID}}.local"
         volumes:
             - "router_data:/data"
