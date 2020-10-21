@@ -2,6 +2,7 @@
 <?php
 
 define("CLOUD_PANEL", getenv("CLOUD_PANEL"));
+define("CLOUD_DOMAIN", getenv("CLOUD_DOMAIN"));
 
 
 
@@ -42,7 +43,7 @@ function dockerApi($url, $m = "GET", $post = null)
 function curl($url, $data)
 {
 	$curl = curl_init();
-	$otp = [
+	$opt = [
 		CURLOPT_URL => $url,
 		CURLOPT_TIMEOUT => 10,
 		CURLOPT_CONNECTTIMEOUT => 10,
@@ -51,13 +52,43 @@ function curl($url, $data)
 		CURLOPT_SSL_VERIFYPEER => false,
 		CURLOPT_CUSTOMREQUEST => 'POST',
 		CURLOPT_RETURNTRANSFER => true,
-		CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
 		CURLOPT_POSTFIELDS => [
 			"data" => json_encode($data)
 		],
 	];
-	curl_setopt_array($curl, $otp);
+	curl_setopt_array($curl, $opt);
 	return $curl;
+}
+
+
+
+/**
+ * Send api request
+ */
+function send_api($url, $data)
+{
+	$curl = curl($url, $data);
+	$out = curl_exec($curl);
+	$code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+	curl_close($curl);
+	
+	$response = null;
+	$code = (int)$code;
+	if ($code == 200 || $code == 204)
+	{
+		$response = @json_decode($out, true);
+	}
+	else if ($code == 400 || $code == 404)
+	{
+		$response = @json_decode($out, true);
+	}
+	
+	if ($response != null && isset($response["code"]) && $response["code"] == 1)
+	{
+		return $response["response"];
+	}
+	
+	return null;
 }
 
 
@@ -99,6 +130,22 @@ function update_nginx_file($file_name, $new_content)
 function delete_nginx_file($file_name)
 {
 	$file = "/etc/nginx/" . $file_name;
+	
+	/* Can't remove main cloud domain */
+	if ($file == "/etc/nginx/domains/" . CLOUD_DOMAIN . ".conf" )
+	{
+		echo "[router.php] nginx file " . $file_name . " can not be deleted\n";
+		return false;
+	}
+	
+	/* Can't services admins. Only clear */
+	if ($file == "/etc/nginx/inc/services_admin_page.inc")
+	{
+		file_put_contents($file, "");
+		echo "[router.php] Clear nginx file " . $file_name . "\n";
+		return true;
+	}
+	
 	if (file_exists($file))
 	{
 		unlink($file);
@@ -144,7 +191,9 @@ function get_services_from_docker_socket()
 		foreach ($tasks as $task)
 		{
 			$state = $task["Status"]["State"];
+			$desired_state = $task["DesiredState"];
 			if ($state != "running") continue;
+			if ($desired_state != "running") continue;
 			$networks = $task["NetworksAttachments"];
 			
 			if ($networks) foreach ($networks as $network)
@@ -210,28 +259,7 @@ function get_nginx_changes($timestamp)
 		"timestamp" => $timestamp,
 	];
 	
-	$curl = curl($url, $data);
-	$out = curl_exec($curl);
-	$code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-	curl_close($curl);
-	
-	$response = null;
-	$code = (int)$code;
-	if ($code == 200 || $code == 204)
-	{
-		$response = @json_decode($out, true);
-	}
-	else if ($code == 400 || $code == 404)
-	{
-		$response = @json_decode($out, true);
-	}
-	
-	if ($response != null && isset($response["code"]) && $response["code"] == 1)
-	{
-		return $response["response"];
-	}
-	
-	return [];
+	return send_api($url, $data);
 }
 
 
@@ -250,7 +278,7 @@ function update_nginx_files()
 	}
 	
 	$files = get_nginx_changes($timestamp);
-	foreach ($files as $file)
+	if ($files != null) foreach ($files as $file)
 	{
 		$file_name = $file["name"];
 		$enable = $file["enable"];
