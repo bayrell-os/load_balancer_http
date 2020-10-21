@@ -13,7 +13,7 @@ services:
             DNS_RESOLVER: 127.0.0.11
             CLOUD_PANEL: cloud_os_system_panel
             CLOUD_DOMAIN: cloud_os.local
-            CLOUD_KEY: mysecretkey
+            CLOUD_SYSTEM_KEY: mysecretkey
         deploy:
             replicas: 1
             endpoint_mode: dnsrr
