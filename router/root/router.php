@@ -1,6 +1,7 @@
 #!/usr/bin/php
 <?php
 
+define("CLOUD_KEY", getenv("CLOUD_KEY"));
 define("CLOUD_PANEL", getenv("CLOUD_PANEL"));
 define("CLOUD_DOMAIN", getenv("CLOUD_DOMAIN"));
 
@@ -42,6 +43,13 @@ function dockerApi($url, $m = "GET", $post = null)
  */
 function curl($url, $data)
 {
+	$time = time();
+	$key = CLOUD_KEY;
+	$arr = array_keys($data);
+	array_unshift($arr, $time);
+	$text = implode("|", $arr);
+	$sign = hash_hmac("SHA512", $text, $key);
+	
 	$curl = curl_init();
 	$opt = [
 		CURLOPT_URL => $url,
@@ -53,7 +61,9 @@ function curl($url, $data)
 		CURLOPT_CUSTOMREQUEST => 'POST',
 		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_POSTFIELDS => [
-			"data" => json_encode($data)
+			"data" => json_encode($data),
+			"time" => $time,
+			"sign" => $sign,
 		],
 	];
 	curl_setopt_array($curl, $opt);
