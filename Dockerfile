@@ -1,9 +1,9 @@
 ARG ARCH=
-FROM bayrell/alpine_php_fpm:7.3-1${ARCH}
+FROM bayrell/alpine_php_fpm:7.3-3${ARCH}
 
 RUN apk update && apk add dnsmasq php7-curl curl && rm -rf /var/cache/apk/*
 
-ADD router /src/files
+ADD files /src/files
 RUN cd ~; \
 	cp -rf /src/files/etc/* /etc/; \
 	cp -rf /src/files/root/* /root/; \
