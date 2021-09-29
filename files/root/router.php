@@ -1,8 +1,8 @@
 #!/usr/bin/php
 <?php
 
-define("CLOUD_KEY", getenv("CLOUD_KEY"));
-define("CLOUD_BUS_GATEWAY", getenv("CLOUD_BUS_GATEWAY"));
+define("CLOUD_OS_KEY", getenv("CLOUD_OS_KEY"));
+define("CLOUD_OS_GATEWAY", getenv("CLOUD_OS_GATEWAY"));
 
 
 
@@ -12,14 +12,15 @@ define("CLOUD_BUS_GATEWAY", getenv("CLOUD_BUS_GATEWAY"));
 function curl($url, $data)
 {
 	$time = time();
-	$key = CLOUD_KEY;
-	$arr = array_keys($data);
+	$key = CLOUD_OS_KEY;
+	$arr = array_keys($data); sort($arr);
 	array_unshift($arr, $time);
 	$text = implode("|", $arr);
 	$sign = hash_hmac("SHA512", $text, $key);
 	
 	$curl = curl_init();
-	$opt = [
+	$opt =
+	[
 		CURLOPT_URL => $url,
 		CURLOPT_TIMEOUT => 10,
 		CURLOPT_CONNECTTIMEOUT => 10,
@@ -28,11 +29,18 @@ function curl($url, $data)
 		CURLOPT_SSL_VERIFYPEER => false,
 		CURLOPT_CUSTOMREQUEST => 'POST',
 		CURLOPT_RETURNTRANSFER => true,
-		CURLOPT_POSTFIELDS => [
-			"data" => json_encode($data),
-			"time" => $time,
-			"sign" => $sign,
+		CURLOPT_HTTPHEADER =>
+		[
+			["Content-Type: application/json"],
 		],
+		CURLOPT_POSTFIELDS => json_encode
+		(
+			[
+				"data" => $data,
+				"time" => $time,
+				"sign" => $sign,
+			]
+		),
 	];
 	curl_setopt_array($curl, $opt);
 	return $curl;
@@ -50,8 +58,10 @@ function send_api($url, $data)
 	$code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 	curl_close($curl);
 	$response = null;
-	
 	$code = (int)$code;
+	
+	//var_dump($code);
+	
 	if ($code == 200 || $code == 204)
 	{
 		$response = @json_decode($out, true);
@@ -61,9 +71,15 @@ function send_api($url, $data)
 		$response = @json_decode($out, true);
 	}
 	
-	if ($response != null && isset($response["code"]) && $response["code"] == 1)
+	//var_dump($response);
+	
+	if (
+		$response != null &&
+		isset($response["error"]) && isset($response["error"]["code"]) &&
+		$response["error"]["code"] == 1
+	)
 	{
-		return $response["response"];
+		return $response["result"];
 	}
 	
 	return null;
@@ -138,8 +154,9 @@ function nginx_reload()
  */
 function get_nginx_changes($timestamp)
 {
-	$url = "http://" . CLOUD_BUS_GATEWAY . "/bus/Bayrell.CloudOS/Bayrell.CloudOS.Balancer/default/getNginxChanges/";
-	$data = [
+	$url = "http://" . CLOUD_OS_GATEWAY . "/api/bus/get_nginx_changes/";
+	$data =
+	[
 		"timestamp" => $timestamp,
 	];
 	return send_api($url, $data);
@@ -157,7 +174,7 @@ function update_nginx_files()
 	$timestamp = 0;
 	if (file_exists("/data/nginx.changes.last"))
 	{
-		$timestamp = file_get_contents("/data/nginx.changes.last");
+		$timestamp = (int)file_get_contents("/data/nginx.changes.last");
 	}
 	
 	$files = get_nginx_changes($timestamp);
