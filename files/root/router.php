@@ -60,6 +60,9 @@ function send_api($url, $data)
 	$response = null;
 	$code = (int)$code;
 	
+	//var_dump($out);
+	//var_dump($url);
+	//var_dump($data);
 	//var_dump($code);
 	
 	if ($code == 200 || $code == 204)
