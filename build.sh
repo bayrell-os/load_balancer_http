@@ -5,40 +5,41 @@ SCRIPT_PATH=`dirname $SCRIPT`
 BASE_PATH=`dirname $SCRIPT_PATH`
 
 RETVAL=0
-VERSION=0.4.0
+VERSION=0.4.1
+IMAGE="bayrell/load_balancer_http"
 TAG=`date '+%Y%m%d_%H%M%S'`
 
 case "$1" in
 	
 	test)
-		docker build ./ -t bayrell/load_balancer_http:$VERSION-$TAG --file Dockerfile
+		docker build ./ -t $IMAGE:$VERSION-$TAG --file Dockerfile
 		cd ..
 	;;
 	
 	amd64)
-		docker build ./ -t bayrell/load_balancer_http:$VERSION-amd64 --file Dockerfile --build-arg ARCH=-amd64
+		docker build ./ -t $IMAGE:$VERSION-amd64 --file Dockerfile --build-arg ARCH=-amd64
 	;;
 	
 	arm64v8)
-		docker build ./ -t bayrell/load_balancer_http:$VERSION-arm64v8 --file Dockerfile --build-arg ARCH=-arm64v8
+		docker build ./ -t $IMAGE:$VERSION-arm64v8 --file Dockerfile --build-arg ARCH=-arm64v8
 	;;
 	
 	arm32v7)
-		docker build ./ -t bayrell/load_balancer_http:$VERSION-arm32v7 --file Dockerfile --build-arg ARCH=-arm32v7
+		docker build ./ -t $IMAGE:$VERSION-arm32v7 --file Dockerfile --build-arg ARCH=-arm32v7
 	;;
 	
 	manifest)
 		rm -rf ~/.docker/manifests/docker.io_load_balancer_http-*
 		
-		docker push bayrell/load_balancer_http:$VERSION-amd64
-		docker push bayrell/load_balancer_http:$VERSION-arm64v8
-		docker push bayrell/load_balancer_http:$VERSION-arm32v7
+		docker push $IMAGE:$VERSION-amd64
+		docker push $IMAGE:$VERSION-arm64v8
+		docker push $IMAGE:$VERSION-arm32v7
 		
-		docker manifest create --amend bayrell/load_balancer_http:$VERSION \
-			bayrell/load_balancer_http:$VERSION-amd64 \
-			bayrell/load_balancer_http:$VERSION-arm64v8 \
-			bayrell/load_balancer_http:$VERSION-arm32v7
-		docker manifest push --purge bayrell/load_balancer_http:$VERSION
+		docker manifest create --amend $IMAGE:$VERSION \
+			$IMAGE:$VERSION-amd64 \
+			$IMAGE:$VERSION-arm64v8 \
+			$IMAGE:$VERSION-arm32v7
+		docker manifest push --purge $IMAGE:$VERSION
 	;;
 	
 	all)
