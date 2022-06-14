@@ -31,7 +31,7 @@ function curl($url, $data)
 		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_HTTPHEADER =>
 		[
-			["Content-Type: application/json"],
+			"Content-Type: application/json",
 		],
 		CURLOPT_POSTFIELDS => json_encode
 		(
