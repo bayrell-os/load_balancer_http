@@ -14,7 +14,7 @@ function curl($url, $data)
 	$time = time();
 	$key = CLOUD_OS_KEY;
 	$arr = array_keys($data); sort($arr);
-	array_unshift($arr, $time);
+	array_push($arr, $time);
 	$text = implode("|", $arr);
 	$sign = hash_hmac("SHA512", $text, $key);
 	
@@ -39,6 +39,7 @@ function curl($url, $data)
 				"data" => $data,
 				"time" => $time,
 				"sign" => $sign,
+				"alg"  => "sha512",
 			]
 		),
 	];
@@ -157,7 +158,7 @@ function nginx_reload()
  */
 function get_nginx_changes($timestamp)
 {
-	$url = "http://" . CLOUD_OS_GATEWAY . "/api/bus/get_nginx_changes/";
+	$url = "http://" . CLOUD_OS_GATEWAY . "/api/bus/nginx/changes/";
 	$data =
 	[
 		"timestamp" => $timestamp,
