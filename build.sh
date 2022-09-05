@@ -12,7 +12,9 @@ TAG=`date '+%Y%m%d_%H%M%S'`
 case "$1" in
 	
 	test)
+		echo "Build $IMAGE:$VERSION-$TAG"
 		docker build ./ -t $IMAGE:$VERSION-$TAG --file Dockerfile
+		docker tag $IMAGE:$VERSION-$TAG $IMAGE:$VERSION
 		cd ..
 	;;
 	
