@@ -2,18 +2,20 @@
 <template>
 	<uid>org.bayrell.load_balancer_http</uid>
 	<name>Cloud OS HTTP load balancer</name>
-	<version>0.4.1</version>
+	<version>0.4.2</version>
 	<maintainer>Ildar &lt;ildar@bayrell.org&gt;</maintainer>
 	<marketplace>https://cloud_os.bayrell.org/</marketplace>
 	<link name="Docker hub">https://hub.docker.com/r/bayrell/load_balancer_http</link>
 	<link name="Github">https://github.com/bayrell-os/load_balancer_http</link>
-    <xml name="bayrell.org" priority="10">https://cloud.bayrell.org/marketplace/org.bayrell.load_balancer_http.xml</xml>
+	<xml name="bayrell.org" priority="10">https://cloud.bayrell.org/marketplace/org.bayrell.load_balancer_http.xml</xml>
 	<xml name="github.com" priority="20">https://raw.githubusercontent.com/bayrell-os/load_balancer_http/main/org.bayrell.load_balancer_http.xml</xml>
+	<arch>amd64</arch>
+	<arch>arm64v8</arch>
 	<license>MIT</license>
 	<yaml>
 		<services>
 			<_var_app_name_>
-				<image>docker.io/bayrell/load_balancer_http:0.4.1</image>
+				<image>docker.io/bayrell/load_balancer_http:0.4.2</image>
 				<hostname>{{.Service.Name}}.{{.Task.ID}}.local</hostname>
 				<volumes>_var_app_name__data:/data</volumes>
 				<ports>
@@ -28,27 +30,26 @@
 					<protocol>tcp</protocol>
 					<mode>host</mode>
 				</ports>
-				<env_file>./env.conf</env_file>
 			</_var_app_name_>
 		</services>
 		<volumes>
 			<_var_app_name__data />
 		</volumes>
 	</yaml>
-  <patch>
-    <operations>
-      <operation type="replace">
-			  <path>/template/yaml/services/_var_app_name_/deploy/update_config/order</path>
-        <value>
-          <order>stop-first</order>
-        </value>
-		  </operation>
-    </operations>
-  </patch>
-  <variables>
+	<patch>
+		<operations>
+			<operation type="replace">
+				<path>/template/yaml/services/_var_app_name_/deploy/update_config/order</path>
+				<value>
+					<order>stop-first</order>
+				</value>
+			</operation>
+		</operations>
+	</patch>
+	<variables>
 		<variable>
 			<name>_var_app_name_</name>
-      <label>App name</label>
+			<label>App name</label>
 			<type>string</type>
 		</variable>
 	</variables>
