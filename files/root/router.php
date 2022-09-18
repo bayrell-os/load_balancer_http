@@ -96,7 +96,7 @@ function send_api($url, $data)
  */
 function update_nginx_file($file_name, $new_content)
 {
-	$file = "/etc/nginx/" . $file_name;
+	$file = "/data/nginx/" . $file_name;
 	$old_content = "";
 	
 	if (file_exists($file))
@@ -169,6 +169,21 @@ function get_nginx_changes($timestamp)
 
 
 /**
+ * Get ssl changes
+ */
+function get_ssl_changes($timestamp)
+{
+	$url = "http://" . CLOUD_OS_GATEWAY . "/api/bus/ssl/get_changes/";
+	$data =
+	[
+		"timestamp" => $timestamp,
+	];
+	return send_api($url, $data);
+}
+
+
+
+/**
  * Update nginx
  */
 function update_nginx_files()
@@ -203,9 +218,27 @@ function update_nginx_files()
 				if (delete_nginx_file($file_name)) $res = true;
 			}
 		}
-	
+		
 		file_put_contents("/data/nginx.changes.last", time());
 	}
+	/*
+	$groups = get_ssl_changes($timestamp);
+	if ($groups != null)
+	{
+		foreach ($groups as $group)
+		{
+			$group_name = $group["id"];
+			$public_key = $group["public_key"];
+			$private_key = $group["private_key"];
+			
+			$public_key_path = "/ssl/" . $group_name . "/public.key";
+			$private_key_path = "/ssl/" . $group_name . "/private.key";
+			
+			if (update_nginx_file($public_key_path, $public_key)) $res = true;
+			if (update_nginx_file($private_key_path, $private_key)) $res = true;
+		}
+	}
+	*/
 	
 	return $res;
 }
