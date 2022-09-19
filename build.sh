@@ -19,10 +19,12 @@ case "$1" in
 	;;
 	
 	amd64)
+		export DOCKER_DEFAULT_PLATFORM=linux/amd64
 		docker build ./ -t $IMAGE:$VERSION-amd64 --file Dockerfile --build-arg ARCH=-amd64
 	;;
 	
 	arm64v8)
+		export DOCKER_DEFAULT_PLATFORM=linux/arm64/v8
 		docker build ./ -t $IMAGE:$VERSION-arm64v8 --file Dockerfile --build-arg ARCH=-arm64v8
 	;;
 	
