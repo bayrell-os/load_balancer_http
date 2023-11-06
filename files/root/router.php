@@ -5,7 +5,6 @@ define("CLOUD_OS_KEY", getenv("CLOUD_OS_KEY"));
 define("CLOUD_OS_GATEWAY", getenv("CLOUD_OS_GATEWAY"));
 
 
-
 /**
  * Returns curl
  */
@@ -48,7 +47,6 @@ function curl($url, $data)
 }
 
 
-
 /**
  * Send api request
  */
@@ -75,20 +73,13 @@ function send_api($url, $data)
 		$response = @json_decode($out, true);
 	}
 	
-	//var_dump($response);
-	
-	if (
-		$response != null &&
-		isset($response["error"]) && isset($response["error"]["code"]) &&
-		$response["error"]["code"] == 1
-	)
+	if ($response != null && isset($response["code"]) && $response["code"] == 1)
 	{
-		return $response["result"];
+		return $response["data"];
 	}
 	
 	return null;
 }
-
 
 
 /**
@@ -121,7 +112,6 @@ function update_nginx_file($file_name, $new_content)
 }
 
 
-
 /**
  * Delete nginx file
  */
@@ -140,7 +130,6 @@ function delete_nginx_file($file_name)
 }
 
 
-
 /**
  * Reload nginx
  */
@@ -150,7 +139,6 @@ function nginx_reload()
 	$s = shell_exec("/usr/sbin/nginx -s reload");
 	echo "[router.php] " . $s;
 }
-
 
 
 /**
@@ -167,7 +155,6 @@ function get_nginx_changes($timestamp)
 }
 
 
-
 /**
  * Get ssl changes
  */
@@ -180,7 +167,6 @@ function get_ssl_changes($timestamp)
 	];
 	return send_api($url, $data);
 }
-
 
 
 /**

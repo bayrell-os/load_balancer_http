@@ -5,7 +5,7 @@ SCRIPT_PATH=`dirname $SCRIPT`
 BASE_PATH=`dirname $SCRIPT_PATH`
 
 RETVAL=0
-VERSION=0.4.3
+VERSION=0.5.0
 IMAGE="bayrell/load_balancer_http"
 TAG=`date '+%Y%m%d_%H%M%S'`
 
