@@ -28,26 +28,34 @@ case "$1" in
 		docker build ./ -t $IMAGE:$VERSION-arm64v8 --file Dockerfile --build-arg ARCH=-arm64v8
 	;;
 	
+	arm32v7)
+		export DOCKER_DEFAULT_PLATFORM=linux/arm/v7
+		docker build ./ -t $IMAGE:$VERSION-arm32v7 --file Dockerfile --build-arg ARCH=-arm32v7
+	;;
+	
 	manifest)
 		rm -rf ~/.docker/manifests/docker.io_load_balancer_http-*
 		
 		docker push $IMAGE:$VERSION-amd64
+		docker push $IMAGE:$VERSION-arm32v7
 		docker push $IMAGE:$VERSION-arm64v8
 		
 		docker manifest create --amend $IMAGE:$VERSION \
 			$IMAGE:$VERSION-amd64 \
+			$IMAGE:$VERSION-arm32v7 \
 			$IMAGE:$VERSION-arm64v8
 		docker manifest push --purge $IMAGE:$VERSION
 	;;
 	
 	all)
 		$0 amd64
+		$0 arm32v7
 		$0 arm64v8
 		$0 manifest
 	;;
 	
 	*)
-		echo "Usage: $0 {amd64|arm64v8|manifest|all|test}"
+		echo "Usage: $0 {amd64|arm32v7|arm64v8|manifest|all|test}"
 		RETVAL=1
 
 esac
