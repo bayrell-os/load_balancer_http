@@ -2,7 +2,7 @@
 <template>
 	<uid>org.bayrell.load_balancer_http</uid>
 	<name>Cloud OS HTTP load balancer</name>
-	<version>0.4.3</version>
+	<version>0.5.0</version>
 	<maintainer>Ildar &lt;ildar@bayrell.org&gt;</maintainer>
 	<marketplace>https://cloud_os.bayrell.org/</marketplace>
 	<link name="Docker hub">https://hub.docker.com/r/bayrell/load_balancer_http</link>
@@ -15,7 +15,7 @@
 	<yaml>
 		<services>
 			<_var_app_name_>
-				<image>docker.io/bayrell/load_balancer_http:0.4.3</image>
+				<image>docker.io/bayrell/load_balancer_http:0.5.0</image>
 				<hostname>{{.Service.Name}}.{{.Task.ID}}.local</hostname>
 				<volumes>_var_app_name__data:/data</volumes>
 				<ports>
