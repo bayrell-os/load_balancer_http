@@ -83,6 +83,15 @@ function send_api($url, $data)
 
 
 /**
+ * Log
+ */
+function print_message($message)
+{
+	echo "[router.php] time=" . date(DATE_ATOM) . "|" . $message . "\n";
+}
+
+
+/**
  * Update nginx file
  */
 function update_nginx_file($file_name, $new_content)
@@ -104,7 +113,7 @@ function update_nginx_file($file_name, $new_content)
 	if ($old_content != $new_content || !file_exists($file) && $new_content == "")
 	{
 		file_put_contents($file, $new_content);
-		echo "[router.php] Updated nginx file " . $file_name . "\n";
+		print_message("Updated nginx file " . $file_name);
 		return true;
 	}
 	
@@ -122,7 +131,7 @@ function delete_nginx_file($file_name)
 	if (file_exists($file))
 	{
 		unlink($file);
-		echo "[router.php] Delete nginx file " . $file_name . "\n";
+		print_message("Delete nginx file " . $file_name);
 		return true;
 	}
 	
@@ -135,9 +144,9 @@ function delete_nginx_file($file_name)
  */
 function nginx_reload()
 {
-	echo "[router.php] Nginx reload\n";
+	sleep(5);
+	print_message("Nginx reload");
 	$s = shell_exec("/usr/sbin/nginx -s reload");
-	echo "[router.php] " . $s;
 }
 
 
@@ -182,7 +191,7 @@ function update_nginx_files()
 		$timestamp = (int)file_get_contents("/data/nginx.changes.last");
 	}
 	
-	$files = get_nginx_changes($timestamp);
+	$files = get_nginx_changes($timestamp - 10*60);
 	if ($files != null)
 	{
 		foreach ($files as $file)

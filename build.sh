@@ -5,7 +5,7 @@ SCRIPT_PATH=`dirname $SCRIPT`
 BASE_PATH=`dirname $SCRIPT_PATH`
 
 RETVAL=0
-VERSION=0.5.0
+VERSION=0.5.1
 IMAGE="bayrell/load_balancer_http"
 TAG=`date '+%Y%m%d_%H%M%S'`
 
@@ -13,7 +13,7 @@ case "$1" in
 	
 	test)
 		echo "Build $IMAGE:$VERSION-$TAG"
-		docker build ./ -t $IMAGE:$VERSION-$TAG --file Dockerfile
+		DOCKER_BUILDKIT=0 docker build ./ -t $IMAGE:$VERSION-$TAG --file Dockerfile
 		docker tag $IMAGE:$VERSION-$TAG $IMAGE:$VERSION
 		cd ..
 	;;
